@@ -6,6 +6,7 @@
 
 
 ## 시각화에서 발견된 핵심 패턴
+- beijing-outputs-figures에서 확인해주세요.
 
 - **Image 3, 8**: 관측소들이 뚜렷하게 두 그룹으로 나뉨. Dongsi·Gucheng·Wanshouxigong·Nongzhanguan·Wanliu(도심) vs Changping·Huairou·Dingling(교외) — 도심이 PM2.5 중앙값·"나쁨" 비율 모두 확연히 높음
 - **Image 5**: 겨울이 다른 계절 대비 압도적으로 높고(75~90 vs 110~116), 하루 중 아침(6-9시)·저녁(19-23시)에 peak — 난방 + 대기 정체 시간대 패턴
