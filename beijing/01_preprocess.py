@@ -14,7 +14,7 @@ import seaborn as sns
 # ------------------------------------------------------------------
 # 1. 12개 관측소 CSV 자동 로드 & 통합
 # ------------------------------------------------------------------
-DATA_PATH = r"C:\Users\과표사업단\Documents\beijing\prsa_all.csv"   # 예: /mnt/project/prsa_all.csv
+DATA_PATH = r"파일 경로"   # 예: /mnt/project/prsa_all.csv
 
 df = pd.read_csv(DATA_PATH)
 print(f"통합 전체 shape: {df.shape}")
