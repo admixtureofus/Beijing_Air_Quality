@@ -20,7 +20,7 @@ plt.rcParams["axes.unicode_minus"] = False
 #____________________________________________________________________________________________________
 
 sns.set_theme(style="whitegrid", font_scale=0.9)
-FIG_DIR = r"C:\Users\과표사업단\Documents\beijing\outputs\figures"
+FIG_DIR = r"파일 경로"
 
 df = pd.read_csv(r"파일 경로", parse_dates=["datetime"])
 print(f"데이터 shape: {df.shape}, 관측소 수: {df['station'].nunique()}")
