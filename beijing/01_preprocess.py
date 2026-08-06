@@ -123,10 +123,4 @@ def pm25_grade(x):
 
 df["pm25_grade"] = df["PM2.5"].apply(pm25_grade)
 
-# ------------------------------------------------------------------
-# 6. 저장
-# ------------------------------------------------------------------
-out_path = "C:\\Users\\과표사업단\\Documents\\beijing\\cleaned_prsa_all.csv"  # 예: /mnt/project/cleaned_prsa_all.csv
-df.to_csv(out_path, index=False)
-print(f"\n저장 완료: {out_path}  shape={df.shape}")
-print(df.head())
+
