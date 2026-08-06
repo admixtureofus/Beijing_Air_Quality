@@ -22,7 +22,7 @@ plt.rcParams["axes.unicode_minus"] = False
 sns.set_theme(style="whitegrid", font_scale=0.9)
 FIG_DIR = r"C:\Users\과표사업단\Documents\beijing\outputs\figures"
 
-df = pd.read_csv(r"C:\Users\과표사업단\Documents\beijing\cleaned_prsa_all.csv", parse_dates=["datetime"])
+df = pd.read_csv(r"파일 경로", parse_dates=["datetime"])
 print(f"데이터 shape: {df.shape}, 관측소 수: {df['station'].nunique()}")
 
 pollutants = ["PM2.5", "PM10", "SO2", "NO2", "CO", "O3"]
