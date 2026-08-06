@@ -1,7 +1,7 @@
 """
 베이징 대기질(PRSA) EDA + 시각화 스크립트
 01_preprocess.py 로 만든 cleaned_prsa_all.csv 를 입력으로 사용한다.
-그림은 /mnt/user-data/outputs/figures 에 저장한다.
+그림은 outputs/figures 에 저장한다.
 """
 
 import matplotlib
