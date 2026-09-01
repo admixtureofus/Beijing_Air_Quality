@@ -1,0 +1,4 @@
+,rank,elpd_diff,dse,p_worse,diag_diff,diag_elpd,p,elpd,se,weight
+hierarchical,0,0.0,0.0,,,,38.6,-18300.0,84.0,0.61
+unpooled,1,-10.0,6.1,0.82,,,62.1,-18300.0,84.0,0.36
+pooled,2,-440.0,30.0,1.0,,,6.0,-18800.0,85.0,0.03
