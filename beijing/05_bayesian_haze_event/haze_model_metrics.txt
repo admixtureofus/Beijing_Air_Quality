@@ -1,0 +1,6 @@
+AUC: 0.9179
+Brier score: 0.0659
+이벤트 비율(base rate): 0.1258
+
+주의: 이 지표는 in-sample (학습에 쓴 데이터로 평가) 기준입니다.
+XGBoost 팀의 held-out 성능과 직접 비교하려면 train/test 분할이 필요합니다.
