@@ -43,8 +43,8 @@ plt.rcParams["axes.unicode_minus"] = False
 # ----------------------------------------------------------------------
 # 0. 설정
 # ----------------------------------------------------------------------
-INPUT_PATH = r"C:\Users\과표사업단\Documents\beijing\cleaned_prsa_all.csv"
-OUTPUT_DIR = r"C:\Users\과표사업단\Documents\beijing\03_bayesian_hierarchical\outputs"
+INPUT_PATH = r"불러올 전처리 파일 경로(파일명.확장자까지)"
+OUTPUT_DIR = r"저장할 위치"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # MCMC 설정: 로컬(코어 여러 개) 환경에서는 DRAWS/TUNE을 늘리고 CHAINS=4 권장
