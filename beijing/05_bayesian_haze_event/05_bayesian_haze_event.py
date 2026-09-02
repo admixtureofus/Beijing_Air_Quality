@@ -60,8 +60,8 @@ plt.rcParams["axes.unicode_minus"] = False
 # ----------------------------------------------------------------------
 # 0. 설정
 # ----------------------------------------------------------------------
-INPUT_PATH = r"C:\Users\과표사업단\Documents\beijing\cleaned_prsa_all.csv"   # 지홍 환경: 01_preprocess.py 출력 파일 경로로 교체
-OUTPUT_DIR = r"/mnt/user-data/outputs"
+INPUT_PATH = r"파일경로\cleaned_prsa_all.csv"   # 지홍 환경: 01_preprocess.py 출력 파일 경로로 교체
+OUTPUT_DIR = r"저장위치/outputs"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 EVENT_THRESHOLD = 150.0  # 일평균 PM2.5 (ug/m3) 기준
