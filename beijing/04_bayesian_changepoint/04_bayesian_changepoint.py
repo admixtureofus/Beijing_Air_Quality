@@ -5,8 +5,7 @@
 
 목적
 ----
-SARIMA 팀이 "추세가 있다/없다"를 본다면, 베이지안 파트는 "언제, 얼마나
-급격하게 레벨이 바뀌었는지"를 불확실성(신뢰구간)과 함께 제시한다.
+베이지안 파트는 "언제, 얼마나 급격하게 레벨이 바뀌었는지"를 불확실성(신뢰구간)과 함께 제시한다.
 2013~2017년은 베이징 대기오염 방지 행동계획 등 정책 개입이 있었던 시기라,
 이 시점 전후로 PM2.5 레벨이 실제로 이동했는지, 그리고 그 이동이
 "도시 전체에서 동시에" 일어났는지 "station마다 제각각"이었는지를 계층모델로
@@ -58,8 +57,8 @@ plt.rcParams["axes.unicode_minus"] = False
 # ----------------------------------------------------------------------
 # 0. 설정
 # ----------------------------------------------------------------------
-INPUT_PATH = r"C:\Users\과표사업단\Documents\beijing\cleaned_prsa_all.csv"   
-OUTPUT_DIR = r"C:\Users\과표사업단\Documents\beijing\04_bayesian_changepoint\outputs"
+INPUT_PATH = r"파일경로\cleaned_prsa_all.csv"   
+OUTPUT_DIR = r"저장위치\04_bayesian_changepoint\outputs"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 DRAWS = 1500
