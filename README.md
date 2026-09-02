@@ -5,7 +5,7 @@
 
 
 
-## 시각화에서 발견된 핵심 패턴
+## EDA 및 시각화에서 발견된 핵심 패턴
 -> beijing--outputs--figures에서 확인해주세요.
 
 - **Image 3, 8**: 관측소들이 뚜렷하게 두 그룹으로 나뉨. Dongsi·Gucheng·Wanshouxigong·Nongzhanguan·Wanliu(도심) vs Changping·Huairou·Dingling(교외) — 도심이 PM2.5 중앙값·"나쁨" 비율 모두 확연히 높음
