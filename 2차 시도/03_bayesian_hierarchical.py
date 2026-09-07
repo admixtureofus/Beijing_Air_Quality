@@ -1,5 +1,5 @@
 """
-03_bayesian_hierarchical.py  (v2 - 지도교수 코멘트 반영본)
+03_bayesian_hierarchical.py  (v2)
 =========================================================
 베이지안 계층 회귀 모델 (Hierarchical / Partial Pooling Regression)
 
