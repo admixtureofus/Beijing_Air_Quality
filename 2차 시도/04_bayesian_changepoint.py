@@ -1,5 +1,5 @@
 """
-04_bayesian_changepoint.py  (v2 - 지도교수 코멘트 반영본)
+04_bayesian_changepoint.py  (v2)
 =========================================================
 베이지안 변화점 탐지 (Changepoint Detection) - Soft Sigmoid Switch 모델
 
