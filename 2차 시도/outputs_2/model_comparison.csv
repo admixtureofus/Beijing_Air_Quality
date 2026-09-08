@@ -1,0 +1,4 @@
+,rank,elpd_diff,dse,p_worse,diag_diff,diag_elpd,p,elpd,se,weight
+hierarchical,0,0.0,0.0,,,29 k̂ > 0.70,1466.1,5100.0,240.0,0.0
+unpooled,1,-6.0,3.8,0.94,,28 k̂ > 0.70,1474.2,5100.0,240.0,0.86
+pooled,2,-700.0,51.0,1.0,,24 k̂ > 0.70,1415.8,4400.0,230.0,0.14
