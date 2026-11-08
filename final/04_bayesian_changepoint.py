@@ -1,5 +1,5 @@
 """
-04_bayesian_changepoint.py  (v2)
+04_bayesian_changepoint.py  (v2 - 지도교수 코멘트 반영본)
 =========================================================
 베이지안 변화점 탐지 (Changepoint Detection) - Soft Sigmoid Switch 모델
 
@@ -24,6 +24,10 @@ v1 대비 변경점 (교수님 코멘트 반영)
          v[t]가 지나치게 유연해지면 시그모이드 레벨 이동 자체를 흡수해버려
          변화점이 식별되지 않기 때문이다(식별성 관리). 계절성(month_effect)은
          12개월 주기로 반복되고 v[t]는 반복되지 않으므로 둘은 구분 가능하다.
+
+[수정] v2.1: 월별 공통효과 v[t]에 합-0 제약(pm.ZeroSumNormal) 적용, 구간 표기를 94% HDI로 통일.
+       Stage 1의 1차 실행에서 자유로운 랜덤효과의 평균이 전역 절편과 능선을 이루어
+       수렴이 실패했기 때문에(r_hat 1.13, ESS 18), 같은 구조를 갖는 본 모델에도 선반영했다.
 
 [C1] 관련: 본 모델에는 3개 지역 그룹 계층이 없고, 계층은 12개 station 수준에만 존재한다.
      12개 단위는 분산모수(tau_*)를 추정하기에 충분하므로 랜덤효과를 유지했다.
@@ -54,6 +58,7 @@ PRIOR SPECIFICATION (C0)
 출력 (OUTPUT_DIR 아래)
 ----------------------
 - changepoint_prior_predictive.png
+- changepoint_global_summary.csv  : 전역 파라미터 요약 (tau_global, delta_global, sigma_time, rho 등)
 - changepoint_summary.csv
 - changepoint_convergence.csv
 - changepoint_trace_diagnostics.png
@@ -72,6 +77,13 @@ import matplotlib.pyplot as plt
 plt.rcParams["font.family"] = "Malgun Gothic"   # Mac: AppleGothic
 plt.rcParams["axes.unicode_minus"] = False
 
+# 요약표·그림의 구간을 94% HDI로 통일 (ArviZ 1.x 기본값은 89% ETI)
+try:
+    az.rcParams["stats.ci_prob"] = 0.94
+    az.rcParams["stats.ci_kind"] = "hdi"
+except Exception:
+    pass
+
 # ----------------------------------------------------------------------
 # 0. 설정
 # ----------------------------------------------------------------------
@@ -85,9 +97,15 @@ CHAINS = 4
 TARGET_ACCEPT = 0.95
 RANDOM_SEED = 42
 
-USE_AR1 = True          # C2
-USE_TIME_EFFECT = True  # C3
-SIGMA_TIME_PRIOR = 0.2  # C3 식별성 관리를 위한 사전분포 스케일
+USE_AR1 = True           # C2
+USE_TIME_EFFECT = True   # C3
+SIGMA_TIME_PRIOR = 0.2   # C3 식별성 관리를 위한 사전분포 스케일
+
+# [v2.2] 1차 실행에서 단일 계단(sigmoid) 변화가 식별되지 않았다(delta 94% HDI가 0을 포함).
+# 감소가 계단이 아니라 완만한 추세였을 가능성을 검토하기 위한 선형 추세항 옵션.
+# True 로 두면 mu 에 trend*(t - T/2) 를 추가한다. 계단(delta)과 추세(trend)는 서로 경합하므로
+# 두 스펙을 따로 돌려 비교하는 방식(모형 비교)을 권장한다.
+USE_LINEAR_TREND = False
 
 
 # ----------------------------------------------------------------------
@@ -197,11 +215,18 @@ def build_changepoint_model(monthly, stations, all_periods, prev_idx, has_prev):
             + month_effect[month_idx_]
         )
 
+        # -- [v2.2] 선형 추세 옵션 (계단이 아닌 점진적 감소 가설) --
+        if USE_LINEAR_TREND:
+            # 월당 변화량. 0.01 이면 48개월에 log 스케일 0.48(약 38%) 변화에 해당.
+            trend = pm.Normal("trend", 0.0, 0.01)
+            mu = mu + trend * (t_idx_ - T / 2.0)
+
         # -- [C3] 월별 도시 공통 랜덤효과 --
         if USE_TIME_EFFECT:
+            # 합-0 제약(ZeroSumNormal): v[t]들의 평균이 level_pre 와 맞바꿔지는 능선을 제거한다.
+            # Stage 1 1차 실행에서 이 능선 때문에 r_hat 1.13 / ESS 18 의 수렴 실패가 발생했다.
             sigma_time = pm.HalfNormal("sigma_time", SIGMA_TIME_PRIOR)
-            v_raw = pm.Normal("v_raw", 0, 1, dims="time")
-            v = sigma_time * v_raw
+            v = pm.ZeroSumNormal("v", sigma=sigma_time, dims="time")
             mu = mu + v[t_pos_]
 
         # -- [C2] 잔차 AR(1) --
@@ -263,7 +288,12 @@ def main():
     if USE_AR1:
         diag_vars.append("rho")
 
-    print(az.summary(idata, var_names=diag_vars))
+    if USE_LINEAR_TREND:
+        diag_vars.append("trend")
+
+    gsum = az.summary(idata, var_names=diag_vars)
+    print(gsum)
+    gsum.to_csv(os.path.join(OUTPUT_DIR, "changepoint_global_summary.csv"))
     rhat_ds = az.rhat(idata, var_names=diag_vars)
     ess_ds = az.ess(idata, var_names=diag_vars)
     diag = pd.DataFrame([{"variable": v,
@@ -285,6 +315,13 @@ def main():
         return all_periods[t]
     print(f"  -> tau_global 사후평균 t={tau_s.mean():.1f} ({to_period(tau_s.mean())}), "
           f"94% HDI t={lo:.1f}~{hi:.1f} ({to_period(lo)} ~ {to_period(hi)})")
+
+    # -- delta 의 방향성 확률: HDI가 0을 포함하더라도 P(delta<0)은 보고할 가치가 있다 --
+    dg = idata.posterior["mu_delta_global"].values.flatten()
+    print(f"  -> mu_delta_global 사후평균 {dg.mean():+.3f}, P(delta<0) = {np.mean(dg < 0):.3f}")
+    d_st = idata.posterior["delta"].values.reshape(-1, len(stations))
+    print(f"  -> station별 P(delta<0) 범위: {(d_st < 0).mean(axis=0).min():.2f} ~ "
+          f"{(d_st < 0).mean(axis=0).max():.2f}")
 
     if USE_AR1:
         rho_s = idata.posterior["rho"].values.flatten()

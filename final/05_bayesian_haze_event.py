@@ -1,5 +1,5 @@
 """
-05_bayesian_haze_event.py  (v2)
+05_bayesian_haze_event.py  (v2 - 지도교수 코멘트 반영본)
 ========================================================
 베이지안 계층 로지스틱 회귀 - 고농도(haze) 이벤트 확률 모델
 
@@ -24,6 +24,9 @@ v1 대비 변경점 (교수님 코멘트 반영)
      날짜별 공통 랜덤효과 u[t] ~ Normal(0, sigma_day) 를 logit 에 더해,
      같은 날 12개 관측이 공유하는 충격을 분리한다. 이로써 계수의 신용구간이
      "17,000 관측"이 아니라 "약 1,460일"에 걸맞게 넓어진다.
+
+[수정] v2.1: 날짜별 공통효과 u[t]에 합-0 제약(pm.ZeroSumNormal) 적용, 구간 표기 94% HDI 통일.
+       (Stage 1의 1차 실행에서 자유로운 랜덤효과 평균과 전역 절편이 능선을 이루어 수렴 실패)
 
 [C4] 시계열 홀드아웃 평가
      랜덤 분할 대신 마지막 12개월(TEST_MONTHS)을 테스트셋으로 고정했다.
@@ -65,6 +68,13 @@ from sklearn.metrics import roc_auc_score, brier_score_loss
 plt.rcParams["font.family"] = "Malgun Gothic"   # Mac: AppleGothic
 plt.rcParams["axes.unicode_minus"] = False
 
+# 요약표·그림의 구간을 94% HDI로 통일 (ArviZ 1.x 기본값은 89% ETI)
+try:
+    az.rcParams["stats.ci_prob"] = 0.94
+    az.rcParams["stats.ci_kind"] = "hdi"
+except Exception:
+    pass
+
 # ----------------------------------------------------------------------
 # 0. 설정
 # ----------------------------------------------------------------------
@@ -78,7 +88,7 @@ TEST_MONTHS = 12          # [C4] 마지막 12개월을 홀드아웃
 DRAWS = 1500
 TUNE = 1500
 CHAINS = 4
-TARGET_ACCEPT = 0.9
+TARGET_ACCEPT = 0.95
 RANDOM_SEED = 42
 N_PRED_DRAWS = 500        # 주변예측확률 계산에 사용할 사후표본 수
 
@@ -198,9 +208,10 @@ def build_model(train, stations, groups, station_idx, group_of_station, dates, d
 
         # -- [C2][C3] 날짜별 도시 공통 랜덤효과 --
         if USE_DAY_EFFECT:
+            # 합-0 제약(ZeroSumNormal): u[t]의 평균이 절편과 맞바꿔지는 능선을 제거한다.
             sigma_day = pm.HalfNormal("sigma_day", sigma=1.0)
-            u_raw = pm.Normal("u_raw", 0, 1, dims="date")
-            logit_p = logit_p + (sigma_day * u_raw)[date_idx_]
+            u = pm.ZeroSumNormal("u", sigma=sigma_day, dims="date")
+            logit_p = logit_p + u[date_idx_]
 
         # p 는 Deterministic 으로 저장하지 않는다(관측 17,000 x 사후표본 = 메모리 과다).
         pm.Bernoulli("obs", logit_p=logit_p, observed=y_, dims="obs_id")

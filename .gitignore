@@ -1,0 +1,16 @@
+# DLP / document-security encrypted artefacts.
+# These are unreadable outside the originating machine and must never be committed.
+*.pLDH
+*.pcf
+*.drm
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
